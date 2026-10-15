@@ -55,6 +55,20 @@ def test_logging_setup(logging_info_mock):
         calculator = Calculator(CalculatorConfig())
         logging_info_mock.assert_any_call("Calculator initialized with configuration")
 
+# Test History Loading Failure Handling
+def test_calculator_initialization_history_load_failure(tmp_path):
+    config = CalculatorConfig(base_dir=tmp_path)
+
+    with patch.object(
+        Calculator, 'load_history',
+        side_effect=OperationError("History load failed")
+    ), patch('app.calculator.logging.warning') as mock_warning:
+        calculator = Calculator(config=config)
+
+    assert calculator.history == []
+    mock_warning.assert_called_once()
+
+
 # Test Adding and Removing Observers
 
 def test_add_observer(calculator):
@@ -92,6 +106,27 @@ def test_perform_operation_operation_error(calculator):
     with pytest.raises(OperationError, match="No operation set"):
         calculator.perform_operation(2, 3)
 
+# Test History Size Limit Enforcement
+def test_perform_operation_trims_history(calculator, monkeypatch):
+    monkeypatch.setattr(calculator.config, 'max_history_size', 1)
+
+    calculator.set_operation(OperationFactory.create_operation('add'))
+    calculator.perform_operation(2, 3)
+    calculator.perform_operation(4, 5)
+
+    assert len(calculator.history) == 1
+    assert calculator.history[0].operand1 == Decimal('4')
+    assert calculator.history[0].operand2 == Decimal('5')
+
+# Tests Unexpected Operation Exception
+def test_perform_operation_wraps_unexpected_exception(calculator):
+    operation = Mock()
+    operation.execute.side_effect = RuntimeError("Unexpected failure")
+    calculator.set_operation(operation)
+
+    with pytest.raises(OperationError, match="Operation failed: Unexpected failure"):
+        calculator.perform_operation(2, 3)
+
 # Test Undo/Redo Functionality
 
 def test_undo(calculator):
@@ -108,6 +143,17 @@ def test_redo(calculator):
     calculator.undo()
     calculator.redo()
     assert len(calculator.history) == 1
+
+# Tests Undo w/ Empty Stack
+def test_undo_empty_stack(calculator):
+    assert calculator.undo() is False
+    assert calculator.history == []
+
+# Tests Redo w/ Empty Stack
+def test_redo_empty_stack(calculator):
+    assert calculator.redo() is False
+    assert calculator.history == []
+
 
 # Test History Management
 
@@ -143,7 +189,26 @@ def test_load_history(mock_exists, mock_read_csv, calculator):
         assert calculator.history[0].result == Decimal("5")
     except OperationError:
         pytest.fail("Loading history failed due to OperationError")
-        
+
+# Test Loading Empty History
+@patch('app.calculator.pd.read_csv')
+@patch('app.calculator.Path.exists', return_value=True)
+def test_load_empty_history(mock_exists, mock_read_csv, calculator):
+    mock_read_csv.return_value = pd.DataFrame()
+
+    calculator.load_history()
+
+    assert calculator.history == []
+
+# Test History Loading Failures
+@patch(
+    'app.calculator.pd.read_csv',
+    side_effect=OSError("Cannot read history")
+)
+@patch('app.calculator.Path.exists', return_value=True)
+def test_load_history_failure(mock_exists, mock_read_csv, calculator):
+    with pytest.raises(OperationError):
+        calculator.load_history()        
             
 # Test Clearing History
 
