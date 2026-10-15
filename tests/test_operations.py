@@ -11,6 +11,7 @@ from app.operations import (
     Division,
     Power,
     Root,
+    Modulus,
     OperationFactory,
 )
 
@@ -182,6 +183,25 @@ class TestRoot(BaseOperationTest):
     }
 
 
+class TestModulus(BaseOperationTest):
+    """Test Modulus operation."""
+
+    operation_class = Modulus
+    valid_test_cases = {
+        "positive_numbers": {"a": "10", "b": "3", "expected": "1"},
+        "zero_remainder": {"a": "15", "b": "5", "expected": "0"},
+        "negative_dividend": {"a": "-10", "b": "3", "expected": "-1"},
+        "decimal_numbers": {"a": "5.5","b": "2","expected": "1.5"},
+    }
+    invalid_test_cases = {
+        "modulus_by_zero": {
+            "a": "10",
+            "b": "0",
+            "error": ValidationError,
+            "message": "Modulus by zero is not allowed"
+        },
+    }
+
 class TestOperationFactory:
     """Test OperationFactory functionality."""
 
@@ -194,6 +214,7 @@ class TestOperationFactory:
             'divide': Division,
             'power': Power,
             'root': Root,
+            'modulus': Modulus,
         }
 
         for op_name, op_class in operation_map.items():
