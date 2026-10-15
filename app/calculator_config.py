@@ -143,6 +143,15 @@ class CalculatorConfig:
             str(self.history_dir / "calculator_history.csv")
         )).resolve()
 
+        # history_filename = os.getenv('CALCULATOR_HISTORY_FILE', 'calculator_history.csv')
+        # history_path = Path(history_filename)
+
+        # # Store relative filenames inside the configured history directory.
+        # if not history_path.is_absolute():
+        #     history_path = self.history_dir / history_path
+
+        # return history_path.resolve()
+
     @property
     def log_file(self) -> Path:
         """
@@ -157,6 +166,15 @@ class CalculatorConfig:
             'CALCULATOR_LOG_FILE',
             str(self.log_dir / "calculator.log")
         )).resolve()
+
+        # log_filename = os.getenv('CALCULATOR_LOG_FILE', 'calculator.log')
+        # log_path = Path(log_filename)
+
+        # # Store relative filenames inside the configured log directory.
+        # if not log_path.is_absolute():
+        #     log_path = self.log_dir / log_path
+
+        # return log_path.resolve()
 
     def validate(self) -> None:
         """
