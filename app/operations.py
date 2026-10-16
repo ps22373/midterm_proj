@@ -325,6 +325,48 @@ class IntegerDivision(Operation):
         self.validate_operands(a, b)
         return a // b
 
+class Percentage(Operation):
+    """
+    Percentage operation implementation.
+
+    Calculates what percentage the first number is of the second number.
+    """
+
+    def validate_operands(self, a: Decimal, b: Decimal) -> None:
+        """
+        Validate operands for percentage operation.
+
+        Overrides the base class method to ensure that the divisor is not zero.
+
+        Args:
+            a (Decimal): The part or first number.
+            b (Decimal): The whole or second number.
+
+        Raises:
+            ValidationError: If the second operand is zero.
+        """
+        super().validate_operands(a, b)
+        if b == 0:
+            raise ValidationError("Percentage calculation by zero is not allowed")
+
+    def execute(self, a: Decimal, b: Decimal) -> Decimal:
+        """
+        Calculate what percentage the first number is of the second number.
+
+        Args:
+            a (Decimal): The part or first number.
+            b (Decimal): The whole or second number.
+
+        Returns:
+            Decimal: The percentage of the second number represented by the first.
+
+        Raises:
+            ValidationError: If the second operand is zero.
+        """
+        self.validate_operands(a, b)
+        return (a / b) * 100
+
+
 class OperationFactory:
     """
     Factory class for creating operation instances.
@@ -343,7 +385,8 @@ class OperationFactory:
         'power': Power,
         'root': Root,
         'modulus': Modulus,
-        'int_divide': IntegerDivision
+        'int_divide': IntegerDivision,
+        'percent': Percentage
     }
 
     @classmethod
