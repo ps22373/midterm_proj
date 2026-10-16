@@ -22,6 +22,9 @@ def calculator_repl():
         # Initialize the Calculator instance
         calc = Calculator()
 
+        # Initialize the decorated help menu
+        help_menu = OperationHelpDecorator(BasicHelpMenu())
+
         # Register observers for logging and auto-saving history
         calc.add_observer(LoggingObserver())
         calc.add_observer(AutoSaveObserver(calc))
@@ -36,14 +39,15 @@ def calculator_repl():
                 if command == 'help':
                     # Display available commands
                     print("\nAvailable commands:")
-                    print("  add, subtract, multiply, divide, power, root - Perform calculations")
-                    print("  history - Show calculation history")
-                    print("  clear - Clear calculation history")
-                    print("  undo - Undo the last calculation")
-                    print("  redo - Redo the last undone calculation")
-                    print("  save - Save calculation history to file")
-                    print("  load - Load calculation history from file")
-                    print("  exit - Exit the calculator")
+                    # print("  add, subtract, multiply, divide, power, root - Perform calculations")
+                    # print("  history - Show calculation history")
+                    # print("  clear - Clear calculation history")
+                    # print("  undo - Undo the last calculation")
+                    # print("  redo - Redo the last undone calculation")
+                    # print("  save - Save calculation history to file")
+                    # print("  load - Load calculation history from file")
+                    # print("  exit - Exit the calculator")
+                    print(help_menu.display())
                     continue
 
                 if command == 'exit':
@@ -107,7 +111,8 @@ def calculator_repl():
                         print(f"Error loading history: {e}")
                     continue
 
-                if command in ['add', 'subtract', 'multiply', 'divide', 'power', 'root']:
+                # if command in ['add', 'subtract', 'multiply', 'divide', 'power', 'root']:
+                if command in OperationFactory.get_available_operations():
                     # Perform the specified arithmetic operation
                     try:
                         print("\nEnter numbers (or 'cancel' to abort):")
@@ -161,3 +166,52 @@ def calculator_repl():
         print(f"Fatal error: {e}")
         logging.error(f"Fatal error in calculator REPL: {e}")
         raise
+
+
+
+
+class HelpMenuComponent:
+    """Base component for the help menu."""
+
+    def display(self) -> str:
+        """Return the help menu text."""
+        raise NotImplementedError
+
+
+class BasicHelpMenu(HelpMenuComponent):
+    """Provide the standard calculator commands."""
+
+    def display(self) -> str:
+        return (
+            "  history - Show calculation history\n"
+            "  clear - Clear calculation history\n"
+            "  undo - Undo the last calculation\n"
+            "  redo - Redo the last undone calculation\n"
+            "  save - Save calculation history to file\n"
+            "  load - Load calculation history from file\n"
+            "  exit - Exit the calculator\n"
+        )
+
+
+class HelpMenuDecorator(HelpMenuComponent):
+    """Base decorator for extending a help menu."""
+
+    def __init__(self, help_menu: HelpMenuComponent):
+        self._help_menu = help_menu
+
+    def display(self) -> str:
+        return self._help_menu.display()
+
+
+class OperationHelpDecorator(HelpMenuDecorator):
+    """Add registered operations to the existing help menu."""
+
+    def display(self) -> str:
+        help_text = super().display()
+        operations = OperationFactory.get_available_operations()
+
+        # Add registered operations before the other commands
+        return (
+            f"  {', '.join(operations)} - Perform calculations\n"
+            + help_text
+        )

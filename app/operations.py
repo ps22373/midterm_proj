@@ -345,3 +345,14 @@ class OperationFactory:
         if not operation_class:
             raise ValueError(f"Unknown operation: {operation_type}")
         return operation_class()
+
+
+    @classmethod
+    def get_available_operations(cls) -> list[str]:
+        """
+        Return the names of all registered operations.
+
+        Returns:
+            list[str]: Available operation identifiers.
+        """
+        return list(cls._operations.keys())
