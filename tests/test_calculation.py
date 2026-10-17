@@ -50,6 +50,21 @@ def test_invalid_root():
     with pytest.raises(OperationError, match="Cannot calculate root of negative number"):
         Calculation(operation="Root", operand1=Decimal("-16"), operand2=Decimal("2"))
 
+def test_modulus():
+    calc = Calculation(operation="Modulus", operand1=Decimal("10"), operand2=Decimal("3"))
+    assert calc.result == Decimal("1")
+
+def test_integer_division():
+    calc = Calculation(operation="IntegerDivision", operand1=Decimal("10"), operand2=Decimal("3"))
+    assert calc.result == Decimal("3")
+
+def test_percentage():
+    calc = Calculation(operation="Percentage", operand1=Decimal("2"), operand2=Decimal("4"))
+    assert calc.result == Decimal("50")
+
+def test_absolute_difference():
+    calc = Calculation(operation="AbsoluteDifference", operand1=Decimal("3"), operand2=Decimal("8"))
+    assert calc.result == Decimal("5")
 
 def test_unknown_operation():
     with pytest.raises(OperationError, match="Unknown operation"):
@@ -130,3 +145,5 @@ def test_from_dict_result_mismatch(caplog):
 
     # Assert
     assert "Loaded calculation result 10 differs from computed result 5" in caplog.text
+
+
