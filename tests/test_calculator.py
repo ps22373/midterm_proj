@@ -445,3 +445,34 @@ def test_repl_unexpected_loop_error(
     calculator_repl()
 
     mock_print.assert_any_call("Error: Input failure")
+
+
+# More Tests
+# Test History DataFrame and Formatted History
+def test_get_history_dataframe_and_show_history(calculator):
+    calculator.set_operation(OperationFactory.create_operation('add'))
+    calculator.perform_operation(2, 3)
+
+    df = calculator.get_history_dataframe()
+
+    assert len(df) == 1
+    assert list(df.columns) == ['operation', 'operand1', 'operand2', 'result', 'timestamp']
+    assert df.iloc[0]['operation'] == 'Addition'
+    assert df.iloc[0]['operand1'] == '2'
+    assert df.iloc[0]['operand2'] == '3'
+    assert df.iloc[0]['result'] == '5'
+
+    assert calculator.show_history() == ['Addition(2, 3) = 5']
+
+
+# Test Logging Setup Failure
+def test_logging_setup_failure(calculator, capsys):
+    with patch(
+        'app.calculator.os.makedirs',
+        side_effect=OSError("Cannot create log directory")
+    ):
+        with pytest.raises(OSError, match="Cannot create log directory"):
+            calculator._setup_logging()
+
+    captured = capsys.readouterr()
+    assert "Error setting up logging: Cannot create log directory" in captured.out
