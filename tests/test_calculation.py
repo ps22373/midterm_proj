@@ -146,4 +146,31 @@ def test_from_dict_result_mismatch(caplog):
     # Assert
     assert "Loaded calculation result 10 differs from computed result 5" in caplog.text
 
+# More Tests
+def test_string_representation():
+    """Test the string representation of a calculation."""
+    calc = Calculation(operation="Addition", operand1=Decimal("2"), operand2=Decimal("3"))
+    assert str(calc) == "Addition(2, 3) = 5"
 
+def test_repr_representation():
+    """Test the detailed representation of a calculation."""
+    calc = Calculation(operation="Addition", operand1=Decimal("2"), operand2=Decimal("3"))
+    result = repr(calc)
+
+    assert result.startswith("Calculation(operation='Addition'")
+    assert "operand1=2" in result
+    assert "operand2=3" in result
+    assert "result=5" in result
+    assert f"timestamp='{calc.timestamp.isoformat()}'" in result
+
+def test_calculation_error_handling():
+    """Test that arithmetic errors are wrapped in OperationError."""
+    with pytest.raises(OperationError, match="Calculation failed"):
+        Calculation(operation="Power", operand1=Decimal("1e308"), operand2=Decimal("2"))
+
+def test_equality_with_non_calculation():
+    """Test comparison between a calculation and a different object type."""
+    calc = Calculation(operation="Addition", operand1=Decimal("2"), operand2=Decimal("3"))
+
+    assert calc.__eq__("not a calculation") is NotImplemented
+    assert calc != "not a calculation"
