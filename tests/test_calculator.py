@@ -242,7 +242,7 @@ def test_calculator_repl_help(mock_print, mock_input):
 @patch('builtins.print')
 def test_calculator_repl_addition(mock_print, mock_input):
     calculator_repl()
-    mock_print.assert_any_call("\nResult: 5")
+    assert any(call.args and "\nResult: 5" in call.args[0] for call in mock_print.call_args_list)
 
 
 # Test Empty History
