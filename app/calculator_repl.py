@@ -143,10 +143,10 @@ def calculator_repl():
                         print(Fore.GREEN + f"\nResult: {result}")
                     except (ValidationError, OperationError) as e:
                         # Handle known exceptions related to validation or operation errors
-                        print(f"Error: {e}")
+                        print(Fore.RED + f"Error: {e}")
                     except Exception as e:
                         # Handle any unexpected exceptions
-                        print(f"Unexpected error: {e}")
+                        print(Fore.RED + f"Unexpected error: {e}")
                     continue
 
                 # Handle unknown commands
@@ -162,12 +162,12 @@ def calculator_repl():
                 break
             except Exception as e:
                 # Handle any other unexpected exceptions
-                print(f"Error: {e}")
+                print(Fore.RED + f"Error: {e}")
                 continue
 
     except Exception as e:
         # Handle fatal errors during initialization
-        print(f"Fatal error: {e}")
+        print(Fore.RED + f"Fatal error: {e}")
         logging.error(f"Fatal error in calculator REPL: {e}")
         raise
 

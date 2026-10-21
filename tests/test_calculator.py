@@ -362,7 +362,7 @@ def test_repl_operation_validation_error(
 
     calculator_repl()
 
-    mock_print.assert_any_call("Error: Invalid input")
+    assert any(call.args and "Error: Invalid input" in call.args[0] for call in mock_print.call_args_list)
 
 # Test Unexpected Error
 @patch('builtins.input', side_effect=['add', '2', '3', 'exit'])
@@ -377,7 +377,7 @@ def test_repl_unexpected_operation_error(
 
     calculator_repl()
 
-    mock_print.assert_any_call("Unexpected error: Unexpected failure")
+    assert any(call.args and "Unexpected error: Unexpected failure" in call.args[0] for call in mock_print.call_args_list)
 
 # Test Unknown Command
 @patch('builtins.input', side_effect=['unknown', 'exit'])
@@ -417,7 +417,7 @@ def test_repl_fatal_initialization_error(mock_calculator, mock_print):
     with pytest.raises(RuntimeError, match="Initialization failed"):
         calculator_repl()
 
-    mock_print.assert_any_call("Fatal error: Initialization failed")
+    assert any(call.args and "Fatal error: Initialization failed" in call.args[0] for call in mock_print.call_args_list)
 
 # Test Save Failure During Exit
 @patch('builtins.input', side_effect=['exit'])
@@ -444,7 +444,7 @@ def test_repl_unexpected_loop_error(
 ):
     calculator_repl()
 
-    mock_print.assert_any_call("Error: Input failure")
+    assert any(call.args and "Error: Input failure" in call.args[0] for call in mock_print.call_args_list)
 
 
 # More Tests
