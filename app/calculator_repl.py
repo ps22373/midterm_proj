@@ -60,7 +60,7 @@ def calculator_repl():
                         calc.save_history()
                         print(Fore.GREEN + "History saved successfully.")
                     except Exception as e:
-                        print(f"Warning: Could not save history: {e}")
+                        print(Fore.YELLOW + f"Warning: Could not save history: {e}")
                     print("Goodbye!")
                     break
 
@@ -86,7 +86,7 @@ def calculator_repl():
                     if calc.undo():
                         print(Fore.GREEN + "Operation undone")
                     else:
-                        print("Nothing to undo")
+                        print(Fore.YELLOW + "Nothing to undo")
                     continue
 
                 if command == 'redo':
@@ -94,7 +94,7 @@ def calculator_repl():
                     if calc.redo():
                         print(Fore.GREEN + "Operation redone")
                     else:
-                        print("Nothing to redo")
+                        print(Fore.YELLOW + "Nothing to redo")
                     continue
 
                 if command == 'save':

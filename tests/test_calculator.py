@@ -429,9 +429,7 @@ def test_repl_exit_save_error(mock_calculator, mock_print, mock_input):
 
     calculator_repl()
 
-    mock_print.assert_any_call(
-        "Warning: Could not save history: Cannot save"
-    )
+    assert any(call.args and "Warning: Could not save history: Cannot save" in call.args[0] for call in mock_print.call_args_list)
     mock_print.assert_any_call("Goodbye!")
 
 # Test Other Unexpected Exceptions
