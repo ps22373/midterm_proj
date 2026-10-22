@@ -330,8 +330,8 @@ def test_repl_save_and_load_errors(mock_calculator, mock_print, mock_input):
 
     calculator_repl()
 
-    mock_print.assert_any_call("Error saving history: Save failed")
-    mock_print.assert_any_call("Error loading history: Load failed")
+    assert any(call.args and "Error saving history: Save failed" in call.args[0] for call in mock_print.call_args_list)
+    assert any(call.args and "Error loading history: Load failed" in call.args[0] for call in mock_print.call_args_list)
 
 # Test Cancel
 @pytest.mark.parametrize(

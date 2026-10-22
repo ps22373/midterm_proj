@@ -103,7 +103,7 @@ def calculator_repl():
                         calc.save_history()
                         print(Fore.GREEN + "History saved successfully")
                     except Exception as e:
-                        print(f"Error saving history: {e}")
+                        print(Fore.RED + f"Error saving history: {e}")
                     continue
 
                 if command == 'load':
@@ -112,7 +112,7 @@ def calculator_repl():
                         calc.load_history()
                         print(Fore.GREEN + "History loaded successfully")
                     except Exception as e:
-                        print(f"Error loading history: {e}")
+                        print(Fore.RED + f"Error loading history: {e}")
                     continue
 
                 # if command in ['add', 'subtract', 'multiply', 'divide', 'power', 'root']:
