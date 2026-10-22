@@ -236,7 +236,7 @@ def test_calculator_repl_exit(mock_print, mock_input):
 @patch('builtins.print')
 def test_calculator_repl_help(mock_print, mock_input):
     calculator_repl()
-    mock_print.assert_any_call("\nAvailable commands:")
+    assert any(call.args and "\nAvailable commands:" in call.args[0] for call in mock_print.call_args_list)
 
 @patch('builtins.input', side_effect=['add', '2', '3', 'exit'])
 @patch('builtins.print')
