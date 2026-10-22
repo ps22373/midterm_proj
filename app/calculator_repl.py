@@ -42,7 +42,7 @@ def calculator_repl():
 
                 if command == 'help':
                     # Display available commands
-                    print(Fore.BLUE + "\nAvailable commands:")
+                    print(Fore.CYAN + "\nAvailable commands:")
                     # print("  add, subtract, multiply, divide, power, root - Perform calculations")
                     # print("  history - Show calculation history")
                     # print("  clear - Clear calculation history")
@@ -51,7 +51,7 @@ def calculator_repl():
                     # print("  save - Save calculation history to file")
                     # print("  load - Load calculation history from file")
                     # print("  exit - Exit the calculator")
-                    print(Fore.BLUE + help_menu.display())
+                    print(Fore.CYAN + help_menu.display())
                     continue
 
                 if command == 'exit':
