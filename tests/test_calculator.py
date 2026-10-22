@@ -386,9 +386,8 @@ def test_repl_unexpected_operation_error(
 def test_repl_unknown_command(mock_calculator, mock_print, mock_input):
     calculator_repl()
 
-    mock_print.assert_any_call(
-        "Unknown command: 'unknown'. Type 'help' for available commands."
-    )
+    assert any(call.args and "Unknown command: 'unknown'. Type 'help' for available commands."
+               in call.args[0] for call in mock_print.call_args_list)
 
 # Test Ctrl+C Interruption
 @patch('builtins.input', side_effect=[KeyboardInterrupt(), 'exit'])
