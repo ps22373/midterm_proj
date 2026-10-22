@@ -58,7 +58,7 @@ def calculator_repl():
                     # Attempt to save history before exiting
                     try:
                         calc.save_history()
-                        print("History saved successfully.")
+                        print(Fore.GREEN + "History saved successfully.")
                     except Exception as e:
                         print(f"Warning: Could not save history: {e}")
                     print("Goodbye!")
@@ -78,13 +78,13 @@ def calculator_repl():
                 if command == 'clear':
                     # Clear calculation history
                     calc.clear_history()
-                    print("History cleared")
+                    print(Fore.GREEN + "History cleared")
                     continue
 
                 if command == 'undo':
                     # Undo the last calculation
                     if calc.undo():
-                        print("Operation undone")
+                        print(Fore.GREEN + "Operation undone")
                     else:
                         print("Nothing to undo")
                     continue
@@ -92,7 +92,7 @@ def calculator_repl():
                 if command == 'redo':
                     # Redo the last undone calculation
                     if calc.redo():
-                        print("Operation redone")
+                        print(Fore.GREEN + "Operation redone")
                     else:
                         print("Nothing to redo")
                     continue
@@ -101,7 +101,7 @@ def calculator_repl():
                     # Save calculation history to file
                     try:
                         calc.save_history()
-                        print("History saved successfully")
+                        print(Fore.GREEN + "History saved successfully")
                     except Exception as e:
                         print(f"Error saving history: {e}")
                     continue
@@ -110,7 +110,7 @@ def calculator_repl():
                     # Load calculation history from file
                     try:
                         calc.load_history()
-                        print("History loaded successfully")
+                        print(Fore.GREEN + "History loaded successfully")
                     except Exception as e:
                         print(f"Error loading history: {e}")
                     continue

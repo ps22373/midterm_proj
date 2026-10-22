@@ -229,7 +229,7 @@ def test_calculator_repl_exit(mock_print, mock_input):
     with patch('app.calculator.Calculator.save_history') as mock_save_history:
         calculator_repl()
         mock_save_history.assert_called_once()
-        mock_print.assert_any_call("History saved successfully.")
+        assert any(call.args and "History saved successfully." in call.args[0] for call in mock_print.call_args_list)
         mock_print.assert_any_call("Goodbye!")
 
 @patch('builtins.input', side_effect=['help', 'exit'])
@@ -276,7 +276,7 @@ def test_repl_clear_history(mock_calculator, mock_print, mock_input):
     calculator_repl()
 
     mock_calculator.return_value.clear_history.assert_called_once()
-    mock_print.assert_any_call("History cleared")
+    assert any(call.args and "History cleared" in call.args[0] for call in mock_print.call_args_list)
 
 # Test Undo/Redo
 @pytest.mark.parametrize(
@@ -304,7 +304,7 @@ def test_repl_undo_redo_commands(
         getattr(
             mock_calculator.return_value, method_name
         ).assert_called_once()
-        mock_print.assert_any_call(expected_message)
+        assert any(call.args and expected_message in call.args[0] for call in mock_print.call_args_list)
 
 # Test Save and Load
 @patch('builtins.input', side_effect=['save', 'load', 'exit'])
@@ -316,8 +316,8 @@ def test_repl_save_and_load(mock_calculator, mock_print, mock_input):
     mock_calculator.return_value.save_history.assert_called()
     mock_calculator.return_value.load_history.assert_called_once()
 
-    mock_print.assert_any_call("History saved successfully")
-    mock_print.assert_any_call("History loaded successfully")
+    assert any(call.args and "History saved successfully" in call.args[0] for call in mock_print.call_args_list)
+    assert any(call.args and "History loaded successfully" in call.args[0] for call in mock_print.call_args_list)
 
 # Test Save and Load Errors
 @patch('builtins.input', side_effect=['save', 'load', 'exit'])
