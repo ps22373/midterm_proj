@@ -150,3 +150,100 @@ The optional CALCULATOR_HISTORY_FILE and CALCULATOR_LOG_FILE variables can overr
 
 ## Usage Guide
 
+### Starting the Application
+
+Run:
+```bash
+python main.py
+```
+
+The calculator starts in an interactive session:
+```bash
+Calculator started. Type 'help' for commands.
+
+Enter command:
+```
+Enter one command at a time. For mathematical operations, the application prompts for two numerical inputs.
+
+### Viewing Available Commands
+
+Enter
+```bash
+help
+```
+The help menu lists the registered mathematical operations and the supported application commands. The operation list is generated dynamically, so newly registered operations can appear without manually adding each operation to the base help menu.
+
+### Performing a Calculation
+
+For example, to add two numbers:
+```bash
+Enter command: add
+
+Enter numbers (or 'cancel' to abort):
+First number: 5
+Second number: 3
+
+Result: 8
+```
+
+To calculate a percentage:
+```bash
+Enter command: percent
+
+Enter numbers (or 'cancel' to abort):
+First number: 25
+Second number: 200
+
+Result: 12.5
+```
+
+If you enter ***cancel*** at either number prompt, the current operation is aborted.
+
+### Mathematical Operations Avaliable
+
+| Command | Description |
+| ------- | ----------- |
+| add | Adds two numbers| 
+| subtract | Subtracts the second number from the first |
+| multiply | Multiplies two numbers |
+| divide | Divides the first number by the second |
+| power | Raises the first number to the power of the second |
+| root | Calculates the nth root of a number |
+| modulus | Compute the remainder of the division of two numbers |
+| int_divide | Perform division that results in an integer quotient, discarding any fractional part |
+| percent | Calculate the percentage of one number with respect to another (e.g., Percentage(a, b) computes (a / b) * 100) |
+| abs_diff | Calculate the absolute difference between two numbers |
+
+Each operation accepts two numerical inputs. Invalid operations and unsupported inputs are handled through the application's validation and exception-handling mechanisms.
+
+### Application Commands
+
+| Command | Description |
+| ------- | ----------- |
+| help | Displays available operations and application commands |
+| history | Displays calculation history |
+| clear | Clears calculation history |
+| undo | Undoes the most recent calculation |
+| redo | Redoes the most recently undone calculation |
+| save | Saves calculation history to CSV |
+| load | Loads calculation history from CSV |
+| exit | Attempts to save history before exiting |
+
+### Undo and Redo
+The undo command reverts the most recent calculation and updates the calculator's state. The redo command restores a calculation that was previously undone.
+
+For example:
+1. Perform an addition.
+2. Enter undo to revert the most recent calculation.
+3. Enter redo to restore the undone calculation.
+
+If no operation is available to undo or redo, the calculator displays a warning rather than treating the situation as a successful operation.
+
+### Color-Coded Output
+Colorama improves terminal readability by distinguishing different message types:
+- **Cyan:** Application startup message and help menu.
+- **Green:** Successful calculation results and successful history actions.
+- **Yellow:** Warnings, unknown commands, and unavailable undo or redo actions.
+- **Red:** Calculation errors, validation errors, and save/load errors.
+
+Color-coded output is an optional enhancement included in this project.
