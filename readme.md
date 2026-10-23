@@ -27,7 +27,7 @@ Two optional features are included: a dynamically generated help menu implemente
 - **Automated Testing**: uses pytest and pytest-cov to test functionality and measure code coverage
 - **Continuous Integration**: rRuns automated tests through GitHub Actions on pushes and pull requests targeting main
 
-## Installation
+## Installation Instructions
 
 ### Clone the Project
 Clone your GitHub repository, replacing the placeholder with your repository URL:
@@ -94,9 +94,8 @@ python main.py
 ```
 The application displays a startup message and prompts you to enter a command.
 
----
 
-## Configuration
+## Configuration Setup
 
 The application uses the python-dotenv package to load settings from a .env file. Configuration is managed by app/calculator_config.py, which provides default values when environment variables are not supplied.
 
@@ -115,6 +114,10 @@ CALCULATOR_AUTO_SAVE=true
 CALCULATOR_PRECISION=10
 CALCULATOR_MAX_INPUT_VALUE=1000000
 CALCULATOR_DEFAULT_ENCODING=utf-8
+
+# Other Settings
+# CALCULATOR_HISTORY_FILE=calculator_history.csv
+# CALCULATOR_LOG_FILE=calculator.log
 ```
 
 ### Environment variables
@@ -247,3 +250,63 @@ Colorama improves terminal readability by distinguishing different message types
 - **Red:** Calculation errors, validation errors, and save/load errors.
 
 Color-coded output is an optional enhancement included in this project.
+
+## Testing Instructions
+
+The project uses pytest for unit testing and pytest-cov for coverage measurement. The test suite includes coverage for calculations, operations, configuration, exceptions, history, undo/redo, and input validation.
+
+Run commands from the project root with the virtual environment activated.
+
+### Run All Tests
+```bash
+pytest
+```
+This executes the configured test suite.
+
+### Measure Code Coverage
+```bash
+pytest --cov=app
+```
+This reports the percentage of application code executed during the test run.
+
+### Display Uncovered Lines
+```bash
+pytest --cov=app --cov-report=term-missing
+```
+The report identifies executable lines that were not covered by tests.
+
+### Generate HTML Report
+```bash
+pytest --cov=app --cov-report=term-missing --cov-report=html
+```
+Open htmlcov/index.html in a browser to explore coverage by file and line.
+
+### Enforce the 90% coverage requirement
+```bash
+pytest --cov=app --cov-fail-under=90
+```
+The command exits unsuccessfully if overall application coverage is below 90%, allowing coverage requirements to be enforced automatically.
+
+Tests covers normal operation, edge cases, invalid input, and error-handling behavior. Coverage exclusions should be used only for intentionally excluded code, not to avoid testing meaningful application logic.
+
+## CI/CD Information
+
+This project uses GitHub Actions to automate testing and help maintain code quality. The workflow runs automatically whenever code is pushed to the main branch or when a pull request is opened targeting main.
+
+### Workflow Process
+
+1. **Checkout Code:** Retrieves the latest version of the project repository.
+
+2. **Set Up Python:** Configures the environment to use Python 3.12.
+
+3. **Install Dependencies:** Installs the packages listed in requirements.txt, along with the testing and code coverage tools.
+
+4. **Run Automated Tests:** Executes the test suite using pytest and measures code coverage with pytest-cov.
+
+5. **Enforce Coverage Requirement:** Requires at least 90% code coverage. If the tests fail or coverage falls below this threshold, the workflow fails.
+
+### Purpose
+
+The GitHub Actions workflow helps identify errors early, verifies that changes do not break existing functionality, and ensures that the project maintains the required test coverage. Automating these checks supports reliable development and helps maintain the overall quality and stability of the calculator application.
+
+**Workflow file:** *.github/workflows/tests.yml*
