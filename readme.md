@@ -25,7 +25,7 @@ Two optional features are included: a dynamically generated help menu implemente
 - **Logging**: records calculation activity and application errors
 - **Environment-Based Configuration**: uses a .env file for configurable application settings
 - **Automated Testing**: uses pytest and pytest-cov to test functionality and measure code coverage
-- **Continuous Integration**: rRuns automated tests through GitHub Actions on pushes and pull requests targeting main
+- **Continuous Integration**: Runs automated tests through GitHub Actions on pushes and pull requests targeting main
 
 ## Installation Instructions
 
@@ -142,6 +142,31 @@ logs/calculator.log
 ```
 The optional CALCULATOR_HISTORY_FILE and CALCULATOR_LOG_FILE variables can override the default file paths. If you do not need custom paths, leave these variables unset so the application uses its default locations.
 
+### Logging Configuration
+
+The calculator uses Python's built-in *logging* module to record application activity and errors. Log files are stored in the *logs/* directory by default.
+
+The application supports the following logging levels:
+- **INFO:** Records general application activity, such as calculation operations, observer registration, and successful history saves.
+- **WARNING:** Records unexpected situations that do not prevent the application from continuing, such as unavailable undo or redo actions.
+- **ERROR:** Records errors encountered during calculations, input validation, and file operations.
+
+The logging configuration is controlled by the following environment variables:
+
+| Variable | Purpose | Default |
+| -------- | ------- | --------|
+| CALCULATOR_LOG_DIR | Directory where log files are stored | logs |
+| CALCULATOR_LOG_FILE | Optional custom log file path | logs/calculator.log |
+
+To configure logging:
+
+1. Create a *.env* file in the project root
+2. Set *CALCULATOR_LOG_DIR* to the desired log directory
+3. Optionally *set CALCULATOR_LOG_FILE* if you want to use a custom log file path
+4. Run the application with *python main.py*
+
+The application records informational messages and errors to help monitor calculations, history persistence, and application failures. Log files can be reviewed when troubleshooting unexpected behavior.
+
 ### Configuration Considerations
 
 - Use true or 1 to enable automatic saving; use false to disable it.
@@ -202,17 +227,17 @@ Result: 12.5
 
 If you enter ***cancel*** at either number prompt, the current operation is aborted.
 
-### Mathematical Operations Avaliable
+### Mathematical Operations Available
 
 | Command | Description |
 | ------- | ----------- |
-| add | Adds two numbers| 
+| add | Adds two numbers | 
 | subtract | Subtracts the second number from the first |
 | multiply | Multiplies two numbers |
 | divide | Divides the first number by the second |
 | power | Raises the first number to the power of the second |
 | root | Calculates the nth root of a number |
-| modulus | Compute the remainder of the division of two numbers |
+| modulus | Computes the remainder of the division of two numbers |
 | int_divide | Perform division that results in an integer quotient, discarding any fractional part |
 | percent | Calculate the percentage of one number with respect to another (e.g., Percentage(a, b) computes (a / b) * 100) |
 | abs_diff | Calculate the absolute difference between two numbers |
@@ -287,7 +312,7 @@ pytest --cov=app --cov-fail-under=90
 ```
 The command exits unsuccessfully if overall application coverage is below 90%, allowing coverage requirements to be enforced automatically.
 
-Tests covers normal operation, edge cases, invalid input, and error-handling behavior. Coverage exclusions should be used only for intentionally excluded code, not to avoid testing meaningful application logic.
+Tests cover normal operation, edge cases, invalid input, and error-handling behavior. Coverage exclusions should be used only for intentionally excluded code, not to avoid testing meaningful application logic.
 
 ## CI/CD Information
 
