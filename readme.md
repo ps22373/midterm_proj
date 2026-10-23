@@ -27,13 +27,16 @@ Two optional features are included: a dynamically generated help menu implemente
 - **Automated Testing**: uses pytest and pytest-cov to test functionality and measure code coverage
 - **Continuous Integration**: Runs automated tests through GitHub Actions on pushes and pull requests targeting main
 
+### Link to Additional Documentation
+- [Design Patterns and Code Enhancements](/design_patterns_and_code_enhancements.md) — Explains the application's design patterns, dynamic help menu, Colorama-based terminal output, and other implementation enhancements.
+
 ## Installation Instructions
 
 ### Clone the Project
 Clone your GitHub repository, replacing the placeholder with your repository URL:
 
 ```bash
-git clone <repository-url>
+git clone git@github.com:ps22373/midterm_proj.git
 cd midterm_proj
 ```
 
@@ -140,11 +143,11 @@ The default history and log file locations are:
 history/calculator_history.csv
 logs/calculator.log
 ```
-The optional CALCULATOR_HISTORY_FILE and CALCULATOR_LOG_FILE variables can override the default file paths. If you do not need custom paths, leave these variables unset so the application uses its default locations.
+The optional ***CALCULATOR_HISTORY_FILE*** and ***CALCULATOR_LOG_FILE*** variables can override the default file paths. If you do not need custom paths, leave these variables unset so the application uses its default locations.
 
 ### Logging Configuration
 
-The calculator uses Python's built-in *logging* module to record application activity and errors. Log files are stored in the *logs/* directory by default.
+The calculator uses Python's built-in ***logging*** module to record application activity and errors. Log files are stored in the ***logs/*** directory by default.
 
 The application supports the following logging levels:
 - **INFO:** Records general application activity, such as calculation operations, observer registration, and successful history saves.
