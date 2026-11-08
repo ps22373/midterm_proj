@@ -60,7 +60,7 @@ class Calculation:
             "Subtraction": lambda x, y: x - y,
             "Multiplication": lambda x, y: x * y,
             "Division": lambda x, y: x / y if y != 0 else self._raise_div_zero(),
-            "Power": lambda x, y: Decimal(pow(float(x), float(y))) if y >= 0 else self._raise_neg_power(),
+            "Power": lambda x, y: x ** y if not (x == 0 and y < 0) else self._raise_zero_negative_power(),
             "Root": lambda x, y: (
                 Decimal(pow(float(x), 1 / float(y))) 
                 if x >= 0 and y != 0 
@@ -94,13 +94,13 @@ class Calculation:
         raise OperationError("Division by zero is not allowed")
 
     @staticmethod
-    def _raise_neg_power():  # pragma: no cover
+    def _raise_zero_negative_power():  # pragma: no cover
         """
-        Helper method to raise negative power error.
+        Helper method to raise a cannot raise 0 to a negative power error.
 
-        This method is called when a negative exponent is used in a power operation.
+        This method is called when zero is raised to a negative exponent in a power operation.
         """
-        raise OperationError("Negative exponents are not supported")
+        raise OperationError("Zero cannot be raised to a negative exponent")
 
     @staticmethod
     def _raise_invalid_root(x: Decimal, y: Decimal):  # pragma: no cover
