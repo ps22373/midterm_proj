@@ -84,9 +84,15 @@ class CalculatorConfig:
         )
 
         # Calculation precision
-        self.precision = precision or int(
-            os.getenv('CALCULATOR_PRECISION', '10')
-        )
+        try:
+            self.precision = (
+                precision if precision is not None
+                else int(os.getenv('CALCULATOR_PRECISION', '10'))
+            )
+        except ValueError as error:
+            raise ConfigurationError(
+                "Invalid CALCULATOR_PRECISION: must be a valid integer"
+            ) from error
 
         # Maximum input value allowed
         self.max_input_value = max_input_value or Decimal(

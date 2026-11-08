@@ -7,7 +7,7 @@ import logging
 from colorama import Fore, init
 
 from app.calculator import Calculator
-from app.exceptions import OperationError, ValidationError
+from app.exceptions import OperationError, ValidationError, ConfigurationError
 from app.history import AutoSaveObserver, LoggingObserver
 from app.operations import OperationFactory
 
@@ -165,6 +165,10 @@ def calculator_repl():
                 print(Fore.RED + f"Error: {e}")
                 continue
 
+    except ConfigurationError as e:
+        # Handle invalid configuration during startup
+        print(Fore.RED + f"Configuration error: {e}")
+        logging.error("Configuration error: %s", e)
     except Exception as e:
         # Handle fatal errors during initialization
         print(Fore.RED + f"Fatal error: {e}")
