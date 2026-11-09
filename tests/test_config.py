@@ -144,3 +144,60 @@ def test_history_file_property():
     config = CalculatorConfig(base_dir=Path('/new_base_dir'))
     assert config.history_file == Path('/new_base_dir/history/calculator_history.csv').resolve()
 
+
+def test_invalid_max_history_size_env_var(monkeypatch):
+    monkeypatch.setenv('CALCULATOR_MAX_HISTORY_SIZE', 'invalid')
+
+    with pytest.raises(
+        ConfigurationError,
+        match="Invalid CALCULATOR_MAX_HISTORY_SIZE: must be a valid integer"
+    ):
+        CalculatorConfig()
+
+
+def test_invalid_auto_save_env_var(monkeypatch):
+    monkeypatch.setenv('CALCULATOR_AUTO_SAVE', 'invalid')
+
+    with pytest.raises(
+        ConfigurationError,
+        match="Invalid CALCULATOR_AUTO_SAVE: must be true or false"
+    ):
+        CalculatorConfig()
+
+
+def test_invalid_precision_env_var(monkeypatch):
+    monkeypatch.setenv('CALCULATOR_PRECISION', 'invalid')
+
+    with pytest.raises(
+        ConfigurationError,
+        match="Invalid CALCULATOR_PRECISION: must be a valid integer"
+    ):
+        CalculatorConfig()
+
+
+def test_invalid_max_input_value_env_var(monkeypatch):
+    monkeypatch.setenv('CALCULATOR_MAX_INPUT_VALUE', 'invalid')
+
+    with pytest.raises(
+        ConfigurationError,
+        match="Invalid CALCULATOR_MAX_INPUT_VALUE: must be a valid number"
+    ):
+        CalculatorConfig()
+
+
+def test_invalid_default_encoding(monkeypatch):
+    monkeypatch.setenv('CALCULATOR_DEFAULT_ENCODING', 'invalid-encoding')
+
+    with pytest.raises(
+        ConfigurationError,
+        match="Invalid CALCULATOR_DEFAULT_ENCODING: unsupported encoding"
+    ):
+        CalculatorConfig()
+
+
+def test_valid_default_encoding(monkeypatch):
+    monkeypatch.setenv('CALCULATOR_DEFAULT_ENCODING', 'utf-8')
+
+    config = CalculatorConfig()
+
+    assert config.default_encoding == 'utf-8'
