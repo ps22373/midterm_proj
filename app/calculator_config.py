@@ -3,13 +3,14 @@
 ########################
 
 from dataclasses import dataclass
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from numbers import Number
 from pathlib import Path
 import os
 from typing import Optional
 
 from dotenv import load_dotenv
+import codecs
 
 from app.exceptions import ConfigurationError
 
@@ -73,15 +74,28 @@ class CalculatorConfig:
         ).resolve()
 
         # Maximum history size
-        self.max_history_size = max_history_size or int(
-            os.getenv('CALCULATOR_MAX_HISTORY_SIZE', '1000')
-        )
+        try:
+            self.max_history_size = max_history_size or int(
+                os.getenv('CALCULATOR_MAX_HISTORY_SIZE', '1000')
+            )
+        except ValueError as error:
+            raise ConfigurationError(
+                "Invalid CALCULATOR_MAX_HISTORY_SIZE: must be a valid integer"
+            ) from error
 
         # Auto-save preference
         auto_save_env = os.getenv('CALCULATOR_AUTO_SAVE', 'true').lower()
-        self.auto_save = auto_save if auto_save is not None else (
-            auto_save_env == 'true' or auto_save_env == '1'
-        )
+
+        if auto_save is not None:
+            self.auto_save = auto_save
+        elif auto_save_env in ('true', '1'):
+            self.auto_save = True
+        elif auto_save_env in ('false', '0'):
+            self.auto_save = False
+        else:
+            raise ConfigurationError(
+                "Invalid CALCULATOR_AUTO_SAVE: must be true or false"
+            )
 
         # Calculation precision
         try:
@@ -95,14 +109,26 @@ class CalculatorConfig:
             ) from error
 
         # Maximum input value allowed
-        self.max_input_value = max_input_value or Decimal(
-            os.getenv('CALCULATOR_MAX_INPUT_VALUE', '1e999')
-        )
+        try:
+            self.max_input_value = max_input_value or Decimal(
+                os.getenv('CALCULATOR_MAX_INPUT_VALUE', '1e999')
+            )
+        except (InvalidOperation, ValueError) as error:
+            raise ConfigurationError(
+                "Invalid CALCULATOR_MAX_INPUT_VALUE: must be a valid number"
+            ) from error
 
         # Default encoding for file operations
         self.default_encoding = default_encoding or os.getenv(
             'CALCULATOR_DEFAULT_ENCODING', 'utf-8'
         )
+        # Validate default encoding
+        try:
+            codecs.lookup(self.default_encoding)
+        except LookupError as error:
+            raise ConfigurationError(
+                "Invalid CALCULATOR_DEFAULT_ENCODING: unsupported encoding"
+            ) from error
 
     @property
     def log_dir(self) -> Path:
