@@ -2,7 +2,7 @@
 # Calculator REPL       #
 ########################
 
-from decimal import Decimal
+from decimal import Decimal, localcontext
 import logging
 from colorama import Fore, init
 
@@ -138,7 +138,9 @@ def calculator_repl():
 
                         # Normalize the result if it's a Decimal
                         if isinstance(result, Decimal):
-                            result = result.normalize()
+                            with localcontext() as context:
+                                context.prec = calc.config.precision
+                                result = result.normalize()
 
                         print(Fore.GREEN + f"\nResult: {result}")
                     except (ValidationError, OperationError) as e:

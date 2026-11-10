@@ -2,7 +2,7 @@
 # Calculator Class      #
 ########################
 
-from decimal import Decimal
+from decimal import Decimal, localcontext
 import logging
 import os
 from pathlib import Path
@@ -196,15 +196,18 @@ class Calculator:
             validated_a = InputValidator.validate_number(a, self.config)
             validated_b = InputValidator.validate_number(b, self.config)
 
-            # Execute the operation strategy
-            result = self.operation_strategy.execute(validated_a, validated_b)
+            with localcontext() as context:
+                context.prec = self.config.precision
 
-            # Create a new Calculation instance with the operation details
-            calculation = Calculation(
-                operation=str(self.operation_strategy),
-                operand1=validated_a,
-                operand2=validated_b
-            )
+                # Execute the operation strategy
+                result = self.operation_strategy.execute(validated_a, validated_b)
+
+                # Create a new Calculation instance with the operation details
+                calculation = Calculation(
+                    operation=str(self.operation_strategy),
+                    operand1=validated_a,
+                    operand2=validated_b
+                )
 
             # Save the current state to the undo stack before making changes
             self.undo_stack.append(CalculatorMemento(self.history.copy()))
@@ -291,16 +294,18 @@ class Calculator:
                 df = pd.read_csv(self.config.history_file, encoding=self.config.default_encoding)
                 if not df.empty:
                     # Deserialize each row into a Calculation instance
-                    self.history = [
-                        Calculation.from_dict({
-                            'operation': row['operation'],
-                            'operand1': row['operand1'],
-                            'operand2': row['operand2'],
-                            'result': row['result'],
-                            'timestamp': row['timestamp']
-                        })
-                        for _, row in df.iterrows()
-                    ]
+                    with localcontext() as context:
+                        context.prec = self.config.precision
+                        self.history = [
+                            Calculation.from_dict({
+                                'operation': row['operation'],
+                                'operand1': row['operand1'],
+                                'operand2': row['operand2'],
+                                'result': row['result'],
+                                'timestamp': row['timestamp']
+                            })
+                            for _, row in df.iterrows()
+                        ]
                     logging.info(f"Loaded {len(self.history)} calculations from history")
                 else:
                     logging.info("Loaded empty history file")
