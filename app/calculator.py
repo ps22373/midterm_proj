@@ -2,7 +2,7 @@
 # Calculator Class      #
 ########################
 
-from decimal import Decimal
+from decimal import Decimal, localcontext
 import logging
 import os
 from pathlib import Path
@@ -97,6 +97,7 @@ class Calculator:
                 filename=str(log_file),
                 level=logging.INFO,
                 format='%(asctime)s - %(levelname)s - %(message)s',
+                encoding=self.config.default_encoding,
                 force=True  # Overwrite any existing logging configuration
             )
             logging.info(f"Logging initialized at: {log_file}")
@@ -195,15 +196,18 @@ class Calculator:
             validated_a = InputValidator.validate_number(a, self.config)
             validated_b = InputValidator.validate_number(b, self.config)
 
-            # Execute the operation strategy
-            result = self.operation_strategy.execute(validated_a, validated_b)
+            with localcontext() as context:
+                context.prec = self.config.precision
 
-            # Create a new Calculation instance with the operation details
-            calculation = Calculation(
-                operation=str(self.operation_strategy),
-                operand1=validated_a,
-                operand2=validated_b
-            )
+                # Execute the operation strategy
+                result = self.operation_strategy.execute(validated_a, validated_b)
+
+                # Create a new Calculation instance with the operation details
+                calculation = Calculation(
+                    operation=str(self.operation_strategy),
+                    operand1=validated_a,
+                    operand2=validated_b
+                )
 
             # Save the current state to the undo stack before making changes
             self.undo_stack.append(CalculatorMemento(self.history.copy()))
@@ -261,12 +265,12 @@ class Calculator:
                 # Create a pandas DataFrame from the history data
                 df = pd.DataFrame(history_data)
                 # Write the DataFrame to a CSV file without the index
-                df.to_csv(self.config.history_file, index=False)
+                df.to_csv(self.config.history_file, index=False, encoding=self.config.default_encoding)
                 logging.info(f"History saved successfully to {self.config.history_file}")
             else:
                 # If history is empty, create an empty CSV with headers
                 pd.DataFrame(columns=['operation', 'operand1', 'operand2', 'result', 'timestamp']
-                           ).to_csv(self.config.history_file, index=False)
+                           ).to_csv(self.config.history_file, index=False, encoding=self.config.default_encoding)
                 logging.info("Empty history saved")
 
         except Exception as e:
@@ -287,19 +291,21 @@ class Calculator:
         try:
             if self.config.history_file.exists():
                 # Read the CSV file into a pandas DataFrame
-                df = pd.read_csv(self.config.history_file)
+                df = pd.read_csv(self.config.history_file, encoding=self.config.default_encoding)
                 if not df.empty:
                     # Deserialize each row into a Calculation instance
-                    self.history = [
-                        Calculation.from_dict({
-                            'operation': row['operation'],
-                            'operand1': row['operand1'],
-                            'operand2': row['operand2'],
-                            'result': row['result'],
-                            'timestamp': row['timestamp']
-                        })
-                        for _, row in df.iterrows()
-                    ]
+                    with localcontext() as context:
+                        context.prec = self.config.precision
+                        self.history = [
+                            Calculation.from_dict({
+                                'operation': row['operation'],
+                                'operand1': row['operand1'],
+                                'operand2': row['operand2'],
+                                'result': row['result'],
+                                'timestamp': row['timestamp']
+                            })
+                            for _, row in df.iterrows()
+                        ]
                     logging.info(f"Loaded {len(self.history)} calculations from history")
                 else:
                     logging.info("Loaded empty history file")

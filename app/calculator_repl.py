@@ -2,12 +2,12 @@
 # Calculator REPL       #
 ########################
 
-from decimal import Decimal
+from decimal import Decimal, localcontext
 import logging
 from colorama import Fore, init
 
 from app.calculator import Calculator
-from app.exceptions import OperationError, ValidationError
+from app.exceptions import OperationError, ValidationError, ConfigurationError
 from app.history import AutoSaveObserver, LoggingObserver
 from app.operations import OperationFactory
 
@@ -138,7 +138,9 @@ def calculator_repl():
 
                         # Normalize the result if it's a Decimal
                         if isinstance(result, Decimal):
-                            result = result.normalize()
+                            with localcontext() as context:
+                                context.prec = calc.config.precision
+                                result = result.normalize()
 
                         print(Fore.GREEN + f"\nResult: {result}")
                     except (ValidationError, OperationError) as e:
@@ -165,6 +167,10 @@ def calculator_repl():
                 print(Fore.RED + f"Error: {e}")
                 continue
 
+    except ConfigurationError as e:
+        # Handle invalid configuration during startup
+        print(Fore.RED + f"Configuration error: {e}")
+        logging.error("Configuration error: %s", e)
     except Exception as e:
         # Handle fatal errors during initialization
         print(Fore.RED + f"Fatal error: {e}")

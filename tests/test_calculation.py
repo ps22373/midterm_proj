@@ -36,9 +36,19 @@ def test_power():
     assert calc.result == Decimal("8")
 
 
-def test_negative_power():
-    with pytest.raises(OperationError, match="Negative exponents are not supported"):
-        Calculation(operation="Power", operand1=Decimal("2"), operand2=Decimal("-3"))
+def test_neg_power():
+    calc = Calculation(operation="Power", operand1=Decimal("2"), operand2=Decimal("-3"))
+    assert calc.result == Decimal("0.125")
+
+
+def test_power_zero_exponent():
+    calc = Calculation(operation="Power", operand1=Decimal("2"), operand2=Decimal("0"))
+    assert calc.result == Decimal("1")
+
+
+def test_zero_to_negative_power():
+    with pytest.raises(OperationError, match="Zero cannot be raised to a negative exponent"):
+        Calculation(operation="Power", operand1=Decimal("0"), operand2=Decimal("-3"))
 
 
 def test_root():
@@ -166,7 +176,7 @@ def test_repr_representation():
 def test_calculation_error_handling():
     """Test that arithmetic errors are wrapped in OperationError."""
     with pytest.raises(OperationError, match="Calculation failed"):
-        Calculation(operation="Power", operand1=Decimal("1e308"), operand2=Decimal("2"))
+        Calculation( operation="Addition", operand1=Decimal("sNaN"), operand2=Decimal("2"))
 
 def test_equality_with_non_calculation():
     """Test comparison between a calculation and a different object type."""
