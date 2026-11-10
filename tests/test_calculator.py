@@ -97,6 +97,12 @@ def test_perform_operation_addition(calculator):
     result = calculator.perform_operation(2, 3)
     assert result == Decimal('5')
 
+def test_perform_operation_negative_exponent(calculator):
+    calculator.set_operation(OperationFactory.create_operation('power'))
+    result = calculator.perform_operation(2, -3)
+    assert result == Decimal('0.125')
+    assert calculator.history[-1].result == Decimal('0.125')
+
 def test_perform_operation_uses_configured_precision(calculator, monkeypatch):
     monkeypatch.setattr(calculator.config, 'precision', 10)
     calculator.set_operation(OperationFactory.create_operation('divide'))
@@ -196,6 +202,42 @@ def test_load_history(mock_exists, mock_read_csv, calculator):
         assert calculator.history[0].result == Decimal("5")
     except OperationError:
         pytest.fail("Loading history failed due to OperationError")
+
+def test_save_history_uses_configured_encoding(calculator, monkeypatch):
+    monkeypatch.setattr(calculator.config, 'default_encoding', 'utf-8')
+
+    calculator.set_operation(OperationFactory.create_operation('add'))
+    calculator.perform_operation(2, 3)
+
+    calculator.save_history()
+
+    saved_file = calculator.config.history_file
+    assert saved_file.exists()
+
+    df = pd.read_csv(saved_file, encoding='utf-8')
+    assert df.iloc[0]['result'] == 5
+
+def test_load_history_uses_configured_encoding(calculator, monkeypatch):
+    monkeypatch.setattr(calculator.config, 'default_encoding', 'utf-8')
+
+    history_data = pd.DataFrame({
+        'operation': ['Addition'],
+        'operand1': ['2'],
+        'operand2': ['3'],
+        'result': ['5'],
+        'timestamp': [datetime.datetime.now().isoformat()]
+    })
+
+    history_data.to_csv(
+        calculator.config.history_file,
+        index=False,
+        encoding='utf-8'
+    )
+
+    calculator.load_history()
+
+    assert len(calculator.history) == 1
+    assert calculator.history[0].result == Decimal('5')
 
 # Test Loading Empty History
 @patch('app.calculator.pd.read_csv')
@@ -424,6 +466,14 @@ def test_repl_fatal_initialization_error(mock_calculator, mock_print):
         calculator_repl()
 
     assert any(call.args and "Fatal error: Initialization failed" in call.args[0] for call in mock_print.call_args_list)
+
+def test_repl_invalid_configuration(monkeypatch, capsys):
+    monkeypatch.setenv('CALCULATOR_PRECISION', 'oops')
+    calculator_repl()
+    captured = capsys.readouterr()
+    assert "Configuration error:" in captured.out
+    assert "Invalid CALCULATOR_PRECISION" in captured.out
+    assert "Traceback" not in captured.out
 
 # Test Save Failure During Exit
 @patch('builtins.input', side_effect=['exit'])
