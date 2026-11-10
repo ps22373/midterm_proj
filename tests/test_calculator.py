@@ -97,6 +97,13 @@ def test_perform_operation_addition(calculator):
     result = calculator.perform_operation(2, 3)
     assert result == Decimal('5')
 
+def test_perform_operation_uses_configured_precision(calculator, monkeypatch):
+    monkeypatch.setattr(calculator.config, 'precision', 10)
+    calculator.set_operation(OperationFactory.create_operation('divide'))
+    result = calculator.perform_operation(1, 3)
+    assert result == Decimal('0.3333333333')
+    assert calculator.history[-1].result == Decimal('0.3333333333')
+
 def test_perform_operation_validation_error(calculator):
     calculator.set_operation(OperationFactory.create_operation('add'))
     with pytest.raises(ValidationError):
